@@ -50,7 +50,7 @@ ssize_t sigio_write(pid_t pid, const void* data, size_t size)
     int8_t bit;
 
     for (size_t i = 0; i < size * __CHAR_BIT__; ++i) {
-        bit = (bits[i / 8] >> (i % 8)) & 1;
+        bit = (bits[i / 8] >> (i % 8)) & 1UL;
         if (kill(pid, BIT_TO_SIGIO(bit)) == -1) {
             sigio_reset();
             return -1;
@@ -70,7 +70,7 @@ ssize_t sigio_read(pid_t pid, void* buffer, size_t size)
         if (bit == -1 || sigio_send_ack(pid) == -1) {
             return -1;
         }
-        bits[i / 8] |= bit << (i % 8);
+        bits[i / 8] = (bits[i / 8] & ~(1UL << (i % 8))) | (bit << (i % 8));
     }
     return size;
 }
