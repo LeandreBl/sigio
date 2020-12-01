@@ -15,7 +15,7 @@ TESTS_OBJS	= $(TESTS_SRCS:.c=.o)
 
 RM			= rm -f
 
-CFLAGS		= -Werror -Wall -Wextra -fPIC -pedantic
+CFLAGS		= -Wall -Wextra -fPIC -pedantic
 CFLAGS		+= -I ./include
 LDFLAGS		= -shared
 
@@ -35,9 +35,10 @@ $(NAME): $(OBJS)
 	["$(GREEN)"LINKING OK"$(NO_COLOR)"]"
 
 tests_run: $(TESTS_OBJS)
-	@$ $(CC) -lcriterion $(TESTS_OBJS) -o $@
-	@echo "$(CC) -lcriterion $(TESTS_OBJS) -o $@ \
+	@$ $(CC) $(TESTS_OBJS) -o $@
+	@echo "$(CC) $(TESTS_OBJS) -o $@ \
 	["$(GREEN)"LINKING OK"$(NO_COLOR)"]"
+	@echo ""$(GREEN)"Tests can block because of the high charge of signals, re-trigger them if needed"$(NO_COLOR)""
 	./$@
 	@$(RM) $@
 	@$(RM) $(TESTS_OBJS)
