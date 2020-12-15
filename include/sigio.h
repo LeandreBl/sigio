@@ -10,6 +10,7 @@
 
 ssize_t sigio_write(pid_t pid, const void *data, size_t size);
 
+ssize_t sigio_pread(pid_t *pid, void *buffer, size_t size);
 ssize_t sigio_read(pid_t pid, void *buffer, size_t size);
 
 void sigio_setup(void);
