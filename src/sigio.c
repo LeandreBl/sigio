@@ -2,8 +2,16 @@
 
 #include "sigio.h"
 
+#define PAUSE_US_DELAY 100
+
 static int __sigio_bit = SIGIO_NONE;
 static pid_t __sigio_remote_pid = SIGIO_NONE;
+
+static void delayed_pause(void)
+{
+    pause();
+    usleep(PAUSE_US_DELAY);
+}
 
 static void sigio_reset(void)
 {
@@ -16,7 +24,7 @@ static void sigio_wait_ack(void)
 
     sigio_reset();
     do {
-        pause();
+        delayed_pause();
         value = __sigio_bit;
         sigio_reset();
     } while (value != SIGIO_TO_BIT(SIGIO_ACK));
@@ -28,7 +36,7 @@ static int sigio_wait_bit(int *pid)
 
     sigio_reset();
     do {
-        pause();
+        delayed_pause();
         if (*pid == -1) {
             *pid = __sigio_remote_pid;
         } else if (__sigio_remote_pid != *pid) {

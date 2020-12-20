@@ -38,7 +38,6 @@ tests_run: $(TESTS_OBJS)
 	@$ $(CC) $(TESTS_OBJS) -o $@
 	@echo "$(CC) $(TESTS_OBJS) -o $@ \
 	["$(GREEN)"LINKING OK"$(NO_COLOR)"]"
-	@echo ""$(GREEN)"Tests can block because of the high charge of signals, re-trigger them if needed"$(NO_COLOR)""
 	./$@
 	@$(RM) $@
 	@$(RM) $(TESTS_OBJS)
