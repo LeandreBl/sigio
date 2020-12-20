@@ -4,7 +4,7 @@
 
 #include "sigio.h"
 
-#define TIMER_FOR_LISTENER 10000
+#define TIMER_FOR_LISTENER 1000
 
 static void single_byte(void)
 {
@@ -139,9 +139,36 @@ static void with_null_pid(void)
     }
 }
 
+static void multiple_write(void)
+{
+    pid_t parent_pid = getpid();
+    pid_t child = fork();
+    ssize_t n;
+    const int ref = 0xba0bab;
+    int v;
+
+    if (child == 0) {
+        n = sigio_read(parent_pid, &v, sizeof(v));
+        assert(n == sizeof(ref));
+        assert(v == ref);
+        v = 0;
+        n = sigio_read(parent_pid, &v, sizeof(v));
+        assert(n == sizeof(ref));
+        assert(v == ref);
+        sigio_fini();
+        exit(0);
+    } else {
+        usleep(TIMER_FOR_LISTENER);
+        n = sigio_write(child, &ref, sizeof(ref));
+        assert(n == sizeof(ref));
+        n = sigio_write(child, &ref, sizeof(ref));
+        assert(n == sizeof(ref));
+    }
+}
+
 static void (*TESTS_FUNCTIONS[])(void)
-    = { &structure,    &single_byte,  &no_byte,
-        &whole_string, &with_get_pid, &with_null_pid };
+    = { &structure,    &single_byte,   &no_byte,       &whole_string,
+        &with_get_pid, &with_null_pid, &multiple_write };
 
 /* Custom main because Criterion does not handle what I want */
 int main(void)
